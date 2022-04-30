@@ -32,7 +32,7 @@ services:
       SERVER_PORT: 8080
     working_dir: /app
     volumes:
-      - $HOME/demo:/app
+      - $HOME/uzrnem/note-app-spring-boot:/app
       - $HOME/.m2:/root/.m2
     command: mvn spring-boot:run #tail -f /dev/null
     ports:
