@@ -36,6 +36,9 @@ public class Note {
 
     @JsonProperty("is_completed")
     private Boolean isCompleted;
+    
+    // private @CreatedDate Instant createdAt;
+    // private @LastModifiedDate Instant updatedAt;
 
     /**
     * No args constructor for use in serialization
