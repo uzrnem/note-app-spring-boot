@@ -37,6 +37,7 @@ public class UserController {
         if(userRepository.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest().body("email exists!");
         }
+        // encode password
         User user = new User(request.getEmail(), request.getPassword());
         userRepository.save(user);
         return ResponseEntity.ok("saved!");
@@ -53,6 +54,7 @@ public class UserController {
         Key key = new SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.getJcaName());
 
         Instant now = Instant.now();
+        // compare with encoded password
         if (user.get().getPassword().equals(request.getPassword())) {
             String jwtToken = Jwts.builder()
                 .claim("email", request.getEmail()) // pass user object
