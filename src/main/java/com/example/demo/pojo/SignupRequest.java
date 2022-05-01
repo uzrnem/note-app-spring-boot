@@ -39,4 +39,6 @@ public class SignupRequest {
     public void setPassword(String password) {
         this.password = password;
     }
+    
+    //to string method
 }
