@@ -6,7 +6,7 @@ logging:
 
 spring:
   # profiles:
-  #  active: "dev"
+  #  active: "dev"  # update code as per profile
   jpa:
     hibernate:
       ddl-auto: update
