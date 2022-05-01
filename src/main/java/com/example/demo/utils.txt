@@ -32,3 +32,20 @@ public class Alien {
 		System.out.println("object created..");
 	}
 }
+
+
+
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+public class BCryptPasswordEncoderTest {
+    public static void main(String[] args) {
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        System.out.println("encoder:  " + encoder.encode("abel"));
+
+        if (encoder.matches("abel", encoder.encode("abel"))) {
+            System.out.println("encoder: true");
+        }
+    }
+}
