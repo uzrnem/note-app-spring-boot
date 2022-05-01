@@ -38,6 +38,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("email exists!");
         }
         // encode password
+	// String encoded = new BCryptPasswordEncoder().encode(plainTextPassword);
         User user = new User(request.getEmail(), request.getPassword());
         userRepository.save(user);
         return ResponseEntity.ok("saved!");
@@ -55,6 +56,7 @@ public class UserController {
 
         Instant now = Instant.now();
         // compare with encoded password
+	// String encoded = new BCryptPasswordEncoder().encode(plainTextPassword);
         if (user.get().getPassword().equals(request.getPassword())) {
             String jwtToken = Jwts.builder()
                 .claim("email", request.getEmail()) // pass user object
