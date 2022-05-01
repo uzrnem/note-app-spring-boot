@@ -27,7 +27,7 @@ public class User {
     @Size(max = 50)
     private String password;
     
-    // @OneToMany(mappedBy="user")
+    // @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
     // private List<Note> notes;
     
     // private @CreatedDate Instant createdAt;
