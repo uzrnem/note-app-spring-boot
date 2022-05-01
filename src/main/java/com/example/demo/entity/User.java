@@ -26,6 +26,12 @@ public class User {
     @NotBlank
     @Size(max = 50)
     private String password;
+    
+    // @OneToMany(mappedBy="user")
+    // private List<User> users;
+    
+    // private @CreatedDate Instant createdAt;
+    // private @LastModifiedDate Instant updatedAt;
 
     public User() {
     }
