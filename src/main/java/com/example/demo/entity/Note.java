@@ -29,7 +29,7 @@ public class Note {
     private String content;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id") //, referencedColumnName="ID")
     @NotNull
     private User user;
@@ -98,4 +98,6 @@ public class Note {
     public void setIsCompleted(Boolean isCompleted) {
         this.isCompleted = isCompleted;
     }
+    
+    // tostring method, hascode, equals method
 }
