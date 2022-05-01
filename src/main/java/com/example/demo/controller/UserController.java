@@ -29,8 +29,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @RequestMapping("/user")
 public class UserController {
 
-	@Autowired
-	UserRepository userRepository;
+    @Autowired
+    UserRepository userRepository;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest request) {
@@ -47,24 +47,24 @@ public class UserController {
         Optional<User> user = userRepository.findByEmail(request.getEmail());
         if (!user.isPresent()) {
             return ResponseEntity.badRequest().body("email not found!");
-        }
-
-        String secret = "bhagyesh";
+	}
+	// update
+	String secret = "bhagyesh";
         Key key = new SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.getJcaName());
 
         Instant now = Instant.now();
         if (user.get().getPassword().equals(request.getPassword())) {
             String jwtToken = Jwts.builder()
-                .claim("email", request.getEmail())
-                .setSubject("bhagyesh")
-                .setId(UUID.randomUUID().toString())
+                .claim("email", request.getEmail()) // pass user object
+                .setSubject("bhagyesh") //remove
+                .setId(UUID.randomUUID().toString()) // remove
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plus(10, ChronoUnit.MINUTES)))
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
             return ResponseEntity.ok(jwtToken);
         } else {
-            return ResponseEntity.ok("failed!");
+            return ResponseEntity.ok("failed!"); //update response 
         }
     }
 
