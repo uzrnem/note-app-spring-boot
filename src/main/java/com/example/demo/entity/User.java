@@ -28,7 +28,7 @@ public class User {
     private String password;
     
     // @OneToMany(mappedBy="user")
-    // private List<User> users;
+    // private List<Note> notes;
     
     // private @CreatedDate Instant createdAt;
     // private @LastModifiedDate Instant updatedAt;
