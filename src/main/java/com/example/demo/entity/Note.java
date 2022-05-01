@@ -30,7 +30,7 @@ public class Note {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id") //, referencedColumnName="ID")
     @NotNull
     private User user;
 
