@@ -1,3 +1,11 @@
 before running spring boot app make sure db is created on mysql
 
-then run docker-compose up -d
+also you can setup config in environment or in application.yml
+
+then run
+
+On Docker
+docker-compose up -d
+
+On Local
+mvn spring-boot:run
