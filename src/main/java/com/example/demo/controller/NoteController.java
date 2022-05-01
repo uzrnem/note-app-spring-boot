@@ -15,8 +15,8 @@ import com.example.demo.repository.NoteRepository;
 @RequestMapping("/notes")
 public class NoteController {
 
-	@Autowired
-	NoteRepository noteRepository;
+    @Autowired
+    NoteRepository noteRepository;
 
     @Autowired
     HttpServletRequest request;
