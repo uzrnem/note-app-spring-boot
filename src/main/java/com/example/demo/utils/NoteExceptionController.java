@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class NoteExceptionController {
    @ExceptionHandler(value = NoteNotfoundException.class)
    public ResponseEntity<Object> exception(NoteNotfoundException exception) {
-      return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>("Note not found", HttpStatus.NOT_FOUND);
    }
 }
