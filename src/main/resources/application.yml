@@ -17,6 +17,9 @@ spring:
     password: ${MYSQL_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
     validationQuery: SELECT 1
+  jwt:
+    secret: bhagyesh
+    exp_time: 3600
 
 server:
   port: ${SERVER_PORT:8080}
