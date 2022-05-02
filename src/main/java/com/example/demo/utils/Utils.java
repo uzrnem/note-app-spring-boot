@@ -31,7 +31,8 @@ public class Utils {
     return key;
   }
   
-  public String generateKey(Integer userId) {
+  public String generateToken(Integer userId) {
+    Instant now = Instant.now();
     return Jwts.builder()
                 .claim("userId", userId)
                 .setIssuedAt(Date.from(now))
@@ -40,10 +41,10 @@ public class Utils {
                 .compact();
   }
   
-  public String validateKey(String token) throws Throwable {
+  public Integer validateToken(String token) throws Throwable {
     Jws<Claims> jwt = Jwts.parser()
             .setSigningKey(this.getKey())
             .parseClaimsJws(token);
-    return jwt.getBody().get("userId"));
+    return (Integer)jwt.getBody().get("userId");
   }
 }
