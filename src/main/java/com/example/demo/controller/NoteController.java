@@ -24,6 +24,6 @@ public class NoteController {
     @Autheticate
     @GetMapping("/list")
     public ResponseEntity<?> list() {
-        return ResponseEntity.ok(request.getAttribute("email"));
+        return ResponseEntity.ok(request.getAttribute("userId"));
     }
 }
