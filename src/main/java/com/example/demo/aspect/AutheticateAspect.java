@@ -15,8 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.web.context.request.RequestContextHolder;
-// import org.springframework.web.context.request.ServletRequestAttributes;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -32,11 +30,9 @@ public class AutheticateAspect {
     @Autowired
     HttpServletRequest request;
 
-    @Around("@annotation(com.example.demo.annotation.Autheticate)")
+    @Around("@annotation(com.example.demo.interfaces.Autheticate)")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        // add request with autowired annotation
-        // HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         String token = request.getHeader("Authorization");
 
         // take secret from applicatiom.yml from resources
