@@ -34,17 +34,17 @@ public class Utils {
   public String generateToken(Integer userId) {
     Instant now = Instant.now();
     return Jwts.builder()
-                .claim("userId", userId)
-                .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(now.plus(expTime, ChronoUnit.SECONDS)))
-                .signWith(SignatureAlgorithm.HS256, this.getKey())
-                .compact();
+      .claim("userId", userId)
+      .setIssuedAt(Date.from(now))
+      .setExpiration(Date.from(now.plus(expTime, ChronoUnit.SECONDS)))
+      .signWith(SignatureAlgorithm.HS256, this.getKey())
+      .compact();
   }
   
   public Integer validateToken(String token) throws Throwable {
     Jws<Claims> jwt = Jwts.parser()
-            .setSigningKey(this.getKey())
-            .parseClaimsJws(token);
+      .setSigningKey(this.getKey())
+      .parseClaimsJws(token);
     return (Integer)jwt.getBody().get("userId");
   }
 }
