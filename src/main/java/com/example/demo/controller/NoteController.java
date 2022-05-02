@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.example.demo.annotation.Autheticate;
+import com.example.demo.interfaces.Autheticate;
 import com.example.demo.repository.NoteRepository;
 
 @RestController
