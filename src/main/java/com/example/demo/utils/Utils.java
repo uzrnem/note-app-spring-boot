@@ -15,6 +15,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import com.example.demo.entity.User;
 import java.util.Map;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Component
 public class Utils {
@@ -26,10 +27,12 @@ public class Utils {
   Integer expTime;
 
   private Key key;
+  private BCryptPasswordEncoder encoder;
   
   @PostConstruct
   public void init() {
     key = new SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.getJcaName());
+    encoder = new BCryptPasswordEncoder();
   }
   
   public String generateToken(User user) {
@@ -47,5 +50,13 @@ public class Utils {
       .setSigningKey(key)
       .parseClaimsJws(token);
     return (Map<String, Object>)jwt.getBody().get("user");
+  }
+  
+  public String encodePassword(String password) {
+    return encoder.encode(password);
+  }
+  
+  public Boolean isPasswordMatches(String password, String hash) {
+    return encoder.matches(password, hash);
   }
 }
