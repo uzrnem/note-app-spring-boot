@@ -1,19 +1,13 @@
 package com.example.demo.controller;
 
-import java.security.Key;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Base64;
-import java.util.Date;
 import java.util.Optional;
-import java.util.UUID;
-
-import javax.crypto.spec.SecretKeySpec;
 import javax.validation.Valid;
 
 import com.example.demo.entity.User;
-import com.example.demo.pojo.SignupRequest;
+import com.example.demo.schema.SignRequest;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.utils.Utils;
+import com.example.demo.schema.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,54 +15,42 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.swagger.v3.oas.annotations.*;
+import io.swagger.v3.oas.annotations.media.*;
+import io.swagger.v3.oas.annotations.responses.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/user")
+@Tag(name = "user", description = "the User API")
 public class UserController {
 
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    Utils util;
+	
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest request) {
+    public ResponseEntity<Response<String>> signup(@Valid @RequestBody SignRequest request) {
         if(userRepository.existsByEmail(request.getEmail())) {
-            return ResponseEntity.badRequest().body("email exists!");
+            return ResponseEntity.badRequest().body(new Response<>("email exists!", null));
         }
-        // encode password
-	// String encoded = new BCryptPasswordEncoder().encode(plainTextPassword);
-        User user = new User(request.getEmail(), request.getPassword());
+        User user = new User(request.getEmail(), util.encodePassword(request.getPassword()));
         userRepository.save(user);
-        return ResponseEntity.ok("saved!");
+        return ResponseEntity.ok(new Response<>("registration successfull!", util.generateToken(user)));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody SignupRequest request) {
+    public ResponseEntity<Response<String>> login(@Valid @RequestBody SignRequest request) {
         Optional<User> user = userRepository.findByEmail(request.getEmail());
         if (!user.isPresent()) {
-            return ResponseEntity.badRequest().body("email not found!");
-	}
-	// update
-	String secret = "bhagyesh";
-        Key key = new SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.getJcaName());
-
-        Instant now = Instant.now();
-        // compare with encoded password
-	// String encoded = new BCryptPasswordEncoder().encode(plainTextPassword);
-        if (user.get().getPassword().equals(request.getPassword())) {
-            String jwtToken = Jwts.builder()
-                .claim("email", request.getEmail()) // pass user object
-                .setSubject("bhagyesh") //remove
-                .setId(UUID.randomUUID().toString()) // remove
-                .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(now.plus(10, ChronoUnit.MINUTES)))
-                .signWith(SignatureAlgorithm.HS256, key)
-                .compact();
-            return ResponseEntity.ok(jwtToken);
+            return ResponseEntity.badRequest().body(new Response<>("email not found!", null));
+        }
+        if (util.isPasswordMatches(request.getPassword(), user.get().getPassword())) {
+            return ResponseEntity.ok(new Response<>("login successfull!", util.generateToken(user.get())));
         } else {
-            return ResponseEntity.ok("failed!"); //update response 
+            return ResponseEntity.badRequest().body(new Response<>("wrong password!", null));
         }
     }
 

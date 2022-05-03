@@ -9,6 +9,10 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import java.time.Instant;
 
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
@@ -25,13 +29,11 @@ public class User {
 
     @NotBlank
     @Size(max = 50)
+    @JsonIgnore
     private String password;
     
-    // @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
-    // private List<Note> notes;
-    
-    // private @CreatedDate Instant createdAt;
-    // private @LastModifiedDate Instant updatedAt;
+    private @CreatedDate Instant createdAt;
+    private @LastModifiedDate Instant updatedAt;
 
     public User() {
     }
@@ -65,6 +67,7 @@ public class User {
         this.email = email;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }

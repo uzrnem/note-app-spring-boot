@@ -13,6 +13,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import java.time.Instant;
+
 @Entity
 @JsonPropertyOrder({
     "id",
@@ -38,8 +42,8 @@ public class Note {
     @JsonProperty("is_completed")
     private Boolean isCompleted;
     
-    // private @CreatedDate Instant createdAt;
-    // private @LastModifiedDate Instant updatedAt;
+    private @CreatedDate Instant createdAt;
+    private @LastModifiedDate Instant updatedAt;
 
     /**
     * No args constructor for use in serialization
@@ -83,6 +87,7 @@ public class Note {
         this.content = content;
     }
 
+    @JsonIgnore
     @JsonProperty("user")
     public User getUser() {
         return user;
