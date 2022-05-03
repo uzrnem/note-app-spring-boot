@@ -17,7 +17,7 @@ public class NoteRequest {
     @JsonProperty("content")
     private String content;
     @JsonProperty("isCompleted")
-    private String isCompleted;
+    private Boolean isCompleted;
 
     /**
      * No args constructor for use in serialization
@@ -31,7 +31,7 @@ public class NoteRequest {
      * @param content
      * @param isCompleted
      */
-    public NoteRequest(String content, String isCompleted) {
+    public NoteRequest(String content, Boolean isCompleted) {
         super();
         this.content = content;
         this.isCompleted = isCompleted;
@@ -48,12 +48,12 @@ public class NoteRequest {
     }
 
     @JsonProperty("isCompleted")
-    public String getIsCompleted() {
+    public Boolean getIsCompleted() {
         return isCompleted;
     }
 
     @JsonProperty("isCompleted")
-    public void setIsCompleted(String isCompleted) {
+    public void setIsCompleted(Boolean isCompleted) {
         this.isCompleted = isCompleted;
     }
 
@@ -76,5 +76,4 @@ public class NoteRequest {
         }
         return sb.toString();
     }
-
 }
