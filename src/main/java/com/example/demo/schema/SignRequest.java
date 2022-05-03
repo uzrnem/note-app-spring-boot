@@ -23,7 +23,7 @@ public class SignRequest {
     
     @NotBlank
     @Size(min = 6, max = 50)
-    @JsonProperty("password ")
+    @JsonProperty("password")
     private String password;
 
     /**
@@ -54,12 +54,12 @@ public class SignRequest {
         this.email = email;
     }
 
-    @JsonProperty("password ")
+    @JsonProperty("password")
     public String getPassword() {
         return password;
     }
 
-    @JsonProperty("password ")
+    @JsonProperty("password")
     public void setPassword(String password) {
         this.password = password;
     }
