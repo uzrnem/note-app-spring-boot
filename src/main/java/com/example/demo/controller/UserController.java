@@ -48,7 +48,6 @@ public class UserController {
             return ResponseEntity.badRequest().body(new Response<>("email not found!", null));
         }
         if (util.isPasswordMatches(request.getPassword(), user.get().getPassword())) {
-            String jwtToken = util.generateToken(user.get().getId());
             return ResponseEntity.ok(new Response<>("login successfull!", util.generateToken(user.get())));
         } else {
             return ResponseEntity.badRequest().body(new Response<>("wrong password!", null));
