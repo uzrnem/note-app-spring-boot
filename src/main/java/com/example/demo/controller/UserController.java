@@ -31,6 +31,12 @@ public class UserController {
     @Autowired
     Utils util;
 	
+    @Operation(summary = "Register User", tags = { "user" })
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "successful operation",
+                content = @Content(schema = @Schema(implementation = Response.class))),
+        @ApiResponse(responseCode = "401", description = "failed operation",
+                content = @Content(schema = @Schema(implementation = Response.class))) })
     @PostMapping("/signup")
     public ResponseEntity<Response<String>> signup(@Valid @RequestBody SignRequest request) {
         if(userRepository.existsByEmail(request.getEmail())) {
@@ -41,6 +47,12 @@ public class UserController {
         return ResponseEntity.ok(new Response<>("registration successfull!", util.generateToken(user)));
     }
 
+    @Operation(summary = "Login User", tags = { "user" })
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "successful operation",
+                content = @Content(schema = @Schema(implementation = Response.class))),
+        @ApiResponse(responseCode = "401", description = "failed operation",
+                content = @Content(schema = @Schema(implementation = Response.class))) })
     @PostMapping("/login")
     public ResponseEntity<Response<String>> login(@Valid @RequestBody SignRequest request) {
         Optional<User> user = userRepository.findByEmail(request.getEmail());
@@ -53,5 +65,4 @@ public class UserController {
             return ResponseEntity.badRequest().body(new Response<>("wrong password!", null));
         }
     }
-
 }
