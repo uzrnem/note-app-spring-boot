@@ -83,6 +83,7 @@ public class Note {
         this.content = content;
     }
 
+    @JsonIgnore
     @JsonProperty("user")
     public User getUser() {
         return user;
