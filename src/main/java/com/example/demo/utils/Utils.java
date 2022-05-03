@@ -2,6 +2,7 @@ package com.example.demo.utils;
 
 import java.security.Key;
 import java.util.Base64;
+import javax.annotation.PostConstruct;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -24,11 +25,9 @@ public class Utils {
 
   private Key key;
   
-  public Key getKey() {
-    if (key == null) {
-      key = new SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.getJcaName());
-    }
-    return key;
+  @PostConstruct
+  public void init() {
+    key = new SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.getJcaName());
   }
   
   public String generateToken(Integer userId) {
@@ -37,13 +36,13 @@ public class Utils {
       .claim("userId", userId)
       .setIssuedAt(Date.from(now))
       .setExpiration(Date.from(now.plus(expTime, ChronoUnit.SECONDS)))
-      .signWith(SignatureAlgorithm.HS256, this.getKey())
+      .signWith(SignatureAlgorithm.HS256, key)
       .compact();
   }
   
   public Integer validateToken(String token) throws Throwable {
     Jws<Claims> jwt = Jwts.parser()
-      .setSigningKey(this.getKey())
+      .setSigningKey(key)
       .parseClaimsJws(token);
     return (Integer)jwt.getBody().get("userId");
   }
