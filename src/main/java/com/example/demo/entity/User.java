@@ -9,6 +9,7 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
@@ -25,6 +26,7 @@ public class User {
 
     @NotBlank
     @Size(max = 50)
+    @JsonIgnore
     private String password;
     
     // @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
@@ -65,6 +67,7 @@ public class User {
         this.email = email;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
