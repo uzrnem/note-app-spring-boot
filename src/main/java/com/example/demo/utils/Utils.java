@@ -15,7 +15,9 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import com.example.demo.entity.User;
 import java.util.Map;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 @Component
 public class Utils {
@@ -27,12 +29,10 @@ public class Utils {
   Integer expTime;
 
   private Key key;
-  private BCryptPasswordEncoder encoder;
   
   @PostConstruct
   public void init() {
     key = new SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.getJcaName());
-    encoder = new BCryptPasswordEncoder();
   }
   
   public String generateToken(User user) {
@@ -53,10 +53,23 @@ public class Utils {
   }
   
   public String encodePassword(String password) {
-    return encoder.encode(password);
+    String hashtext = "MD5";
+    try {
+      MessageDigest md = MessageDigest.getInstance(hashtext);
+      byte[] messageDigest = md.digest(password.getBytes());
+      BigInteger no = new BigInteger(1, messageDigest);
+      hashtext = no.toString(16);
+      while (hashtext.length() < 32) {
+        hashtext = "0" + hashtext;
+      }
+    } 
+    catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException(e);
+    }
+    return hashtext;
   }
   
   public Boolean isPasswordMatches(String password, String hash) {
-    return encoder.matches(password, hash);
+    return encodePassword(password).equals(hash);
   }
 }
