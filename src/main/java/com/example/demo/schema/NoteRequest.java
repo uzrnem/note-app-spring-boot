@@ -1,7 +1,7 @@
 
 package com.example.demo.schema;
 
-import javax.annotation.Generated;
+import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -11,9 +11,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "content",
     "isCompleted"
 })
-@Generated("jsonschema2pojo")
 public class NoteRequest {
 
+    @NotNull
     @JsonProperty("content")
     private String content;
     @JsonProperty("isCompleted")
