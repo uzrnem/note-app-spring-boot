@@ -27,12 +27,12 @@ public class AutheticateAspect {
     Utils util;
 
     @Around("@annotation(com.example.demo.interfaces.Autheticate)")
-    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object authenticateToken(ProceedingJoinPoint joinPoint) throws Throwable {
 
         String token = request.getHeader("Authorization");
 
         try {
-            Map<String, Object> user = util.validateToken(token);
+            Map<String, Object> user = util.validateToken(token.replace("Bearer ", ""));
             request.setAttribute("user", user);
             request.setAttribute("user_id", (Integer) user.get("id"));
 
