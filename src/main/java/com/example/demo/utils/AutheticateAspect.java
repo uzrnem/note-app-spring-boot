@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import com.fasterxml.jackson.core.io.JsonEOFException;
+import com.example.demo.schema.Response;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -39,9 +40,9 @@ public class AutheticateAspect {
 
             return proceed;
         } catch (ExpiredJwtException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("expired");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Response<>("token expired!", null));
         } catch (JsonEOFException | MalformedJwtException | IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("bad token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Response<>("token invalid!", null));
         }
     }
 }
