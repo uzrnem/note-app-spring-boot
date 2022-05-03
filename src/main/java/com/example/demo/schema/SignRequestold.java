@@ -4,7 +4,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-public class SignupRequest {
+public class SignRequest {
     
     @NotBlank
     @Size(min = 3, max = 50)
@@ -15,10 +15,10 @@ public class SignupRequest {
     @Size(min = 6, max = 50)
     private String password;
 
-    public SignupRequest() {
+    public SignRequest() {
     }
 
-    public SignupRequest(String email, String password) {
+    public SignRequest(String email, String password) {
         super();
         this.email = email;
         this.password = password;
