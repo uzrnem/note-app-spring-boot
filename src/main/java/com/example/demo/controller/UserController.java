@@ -36,9 +36,7 @@ public class UserController {
         if(userRepository.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest().body(new Response<>("email exists!", null));
         }
-        // encode password
-        // String encoded = new BCryptPasswordEncoder().encode(plainTextPassword);
-        User user = new User(request.getEmail(), request.getPassword());
+        User user = new User(request.getEmail(), util.encodePassword(request.getPassword()));
         userRepository.save(user);
         return ResponseEntity.ok(new Response<>("registration successfull!", util.generateToken(user)));
     }
@@ -49,7 +47,7 @@ public class UserController {
         if (!user.isPresent()) {
             return ResponseEntity.badRequest().body(new Response<>("email not found!", null));
         }
-        if (user.get().getPassword().equals(request.getPassword())) {
+        if (util.isPasswordMatches(request.getPassword(), user.get().getPassword())) {
             String jwtToken = util.generateToken(user.get().getId());
             return ResponseEntity.ok(new Response<>("login successfull!", util.generateToken(user.get())));
         } else {
