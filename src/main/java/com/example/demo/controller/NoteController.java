@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -12,8 +13,11 @@ import com.example.demo.interfaces.Autheticate;
 import com.example.demo.repository.NoteRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.schema.NoteRequest;
+import com.example.demo.schema.NoteResponse;
 import com.example.demo.schema.Response;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +31,15 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.*;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/note")
 @Tag(name = "note", description = "the Note API")
 public class NoteController {
+
+    Logger logger = LogManager.getLogger(NoteController.class);
 
     @Autowired
     NoteRepository noteRepository;
@@ -45,12 +52,12 @@ public class NoteController {
 
     @Autheticate
     @GetMapping()
-    @Operation(summary = "List of user notes", tags = { "note" })
+    @Operation(summary = "List of user notes", tags = { "note" }, security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "successful operation"),
         @ApiResponse(responseCode = "401", description = "failed operation",
             content = @Content(schema = @Schema(implementation = Response.class))) })
-    public ResponseEntity<Response<List<Note>>> listNote() {
+    public ResponseEntity<Response<List<NoteResponse>>> listNote() {
         Optional<User> user = userRepository.findById((Integer)request.getAttribute("user_id"));
 
         if (!user.isPresent()) {
@@ -59,17 +66,20 @@ public class NoteController {
 
         List<Note> notes = noteRepository.getByUserId(user.get().getId());
 
-        return ResponseEntity.ok(new Response<>("notes listed!", notes));
+        List<NoteResponse> notesR = notes.stream()
+            .map(n -> new NoteResponse(n.getId().intValue(), n.getContent(), n.getIsCompleted())).collect(Collectors.toList());
+
+        return ResponseEntity.ok(new Response<>("notes listed!", notesR));
     }
 
     @Autheticate
     @PostMapping()
-    @Operation(summary = "Add Note to User List", tags = { "note" })
+    @Operation(summary = "Add Note to User List", tags = { "note" }, security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "successful operation"),
         @ApiResponse(responseCode = "401", description = "failed operation",
                 content = @Content(schema = @Schema(implementation = Response.class))) })
-    public ResponseEntity<Response<Note>> addNote(@Valid @RequestBody NoteRequest noteRequest) {
+    public ResponseEntity<Response<NoteResponse>> addNote(@Valid @RequestBody NoteRequest noteRequest) {
         Optional<User> user = userRepository.findById((Integer)request.getAttribute("user_id"));
 
         if (!user.isPresent()) {
@@ -78,17 +88,17 @@ public class NoteController {
         Note note = new Note(noteRequest.getContent(), user.get(), noteRequest.getIsCompleted());
 
         noteRepository.save(note);
-        return ResponseEntity.ok(new Response<>("note created!", note));
+        return ResponseEntity.ok(new Response<>("note created!", new NoteResponse(note.getId().intValue(), note.getContent(), note.getIsCompleted())));
     }
 
     @Autheticate
     @GetMapping("/{id}")
-    @Operation(summary = "Fetch User Note", tags = { "note" })
+    @Operation(summary = "Fetch User Note", tags = { "note" }, security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "successful operation"),
         @ApiResponse(responseCode = "401", description = "failed operation",
                 content = @Content(schema = @Schema(implementation = Response.class))) })
-    public ResponseEntity<Response<Note>> getNote(@PathVariable("id") Long id) {
+    public ResponseEntity<Response<NoteResponse>> getNote(@PathVariable("id") Long id) {
         Optional<User> user = userRepository.findById((Integer)request.getAttribute("user_id"));
 
         if (!user.isPresent()) {
@@ -101,17 +111,19 @@ public class NoteController {
             return ResponseEntity.badRequest().body(new Response<>("note not found!", null));
         }
 
-        return ResponseEntity.ok(new Response<>("note showed!", note.get()));
+        Note n = note.get();
+
+        return ResponseEntity.ok(new Response<>("note showed!", new NoteResponse(n.getId().intValue(), n.getContent(), n.getIsCompleted())));
     }
 
     @Autheticate
     @PostMapping("/{id}")
-    @Operation(summary = "Update User Note", tags = { "note" })
+    @Operation(summary = "Update User Note", tags = { "note" }, security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "successful operation"),
         @ApiResponse(responseCode = "401", description = "failed operation",
                 content = @Content(schema = @Schema(implementation = Response.class))) })
-    public ResponseEntity<Response<Note>> updateNote(@PathVariable("id") Long id, @Valid @RequestBody NoteRequest noteRequest) {
+    public ResponseEntity<Response<NoteResponse>> updateNote(@PathVariable("id") Long id, @Valid @RequestBody NoteRequest noteRequest) {
         Optional<User> user = userRepository.findById((Integer)request.getAttribute("user_id"));
 
         if (!user.isPresent()) {
@@ -130,17 +142,17 @@ public class NoteController {
         note.setIsCompleted(noteRequest.getIsCompleted());
         noteRepository.save(note);
 
-        return ResponseEntity.ok(new Response<>("note updated!", note));
+        return ResponseEntity.ok(new Response<>("note updated!", new NoteResponse(note.getId().intValue(), note.getContent(), note.getIsCompleted())));
     }
 
     @Autheticate
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete User Note", tags = { "note" })
+    @Operation(summary = "Delete User Note", tags = { "note" }, security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "successful operation"),
         @ApiResponse(responseCode = "401", description = "failed operation",
                 content = @Content(schema = @Schema(implementation = Response.class))) })
-    public ResponseEntity<Response<Note>> deleteNote(@PathVariable("id") Long id) {
+    public ResponseEntity<Response<?>> deleteNote(@PathVariable("id") Long id) {
         Optional<User> user = userRepository.findById((Integer)request.getAttribute("user_id"));
 
         if (!user.isPresent()) {
