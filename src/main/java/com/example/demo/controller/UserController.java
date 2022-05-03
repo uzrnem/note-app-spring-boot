@@ -4,7 +4,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import com.example.demo.entity.User;
-import com.example.demo.pojo.SignupRequest;
+import com.example.demo.schema.SignRequest;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.utils.Utils;
 
@@ -26,7 +26,7 @@ public class UserController {
     Utils util;
 	
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest request) {
+    public ResponseEntity<?> signup(@Valid @RequestBody SignRequest request) {
         if(userRepository.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest().body("email exists!");
         }
@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody SignupRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody SignRequest request) {
         Optional<User> user = userRepository.findByEmail(request.getEmail());
         if (!user.isPresent()) {
             return ResponseEntity.badRequest().body("email not found!");
