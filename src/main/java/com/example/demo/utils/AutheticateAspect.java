@@ -29,7 +29,7 @@ public class AutheticateAspect {
         String token = request.getHeader("Authorization");
 
         try {
-            request.setAttribute("userId", util.validateToken(token));
+            request.setAttribute("user", util.validateToken(token));
 
             Object proceed = joinPoint.proceed();
 
