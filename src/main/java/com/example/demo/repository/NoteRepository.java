@@ -10,5 +10,5 @@ import com.example.demo.entity.Note;
 public interface NoteRepository extends CrudRepository<Note, Integer> {
     List<Note> getByUserId(Integer userId);
 
-    Optional<Note> getByIdAndUserId( Integer id, Integer userId);    
+    Optional<Note> getByIdAndUserId( Long id, Integer userId);
 }
