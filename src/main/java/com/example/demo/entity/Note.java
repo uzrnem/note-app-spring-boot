@@ -53,6 +53,18 @@ public class Note {
     }
 
     /**
+    * @param user
+    * @param content
+    * @param isCompleted
+    */
+    public Note(String content, User user, Boolean isCompleted) {
+        super();
+        this.content = content;
+        this.user = user;
+        this.isCompleted = isCompleted;
+    }
+
+    /**
     *
     * @param id
     * @param user
