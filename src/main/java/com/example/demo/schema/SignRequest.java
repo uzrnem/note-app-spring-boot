@@ -1,7 +1,9 @@
 
 package com.example.demo.schema;
 
-import javax.annotation.Generated;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -11,11 +13,16 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "email",
     "password "
 })
-@Generated("jsonschema2pojo")
 public class SignRequest {
-
+    
+    @NotBlank
+    @Size(min = 3, max = 50)
+    @Email
     @JsonProperty("email")
     private String email;
+    
+    @NotBlank
+    @Size(min = 6, max = 50)
     @JsonProperty("password ")
     private String password;
 
