@@ -1,5 +1,7 @@
 package com.example.demo.utils;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import com.fasterxml.jackson.core.io.JsonEOFException;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -29,7 +31,9 @@ public class AutheticateAspect {
         String token = request.getHeader("Authorization");
 
         try {
-            request.setAttribute("user", util.validateToken(token));
+            Map<String, Object> user = util.validateToken(token);
+            request.setAttribute("user", user);
+            request.setAttribute("user_id", (Integer) user.get("id"));
 
             Object proceed = joinPoint.proceed();
 
