@@ -13,6 +13,8 @@ import java.util.Date;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import com.example.demo.entity.User;
+import java.util.Map;
 
 @Component
 public class Utils {
@@ -30,20 +32,20 @@ public class Utils {
     key = new SecretKeySpec(Base64.getDecoder().decode(secret), SignatureAlgorithm.HS256.getJcaName());
   }
   
-  public String generateToken(Integer userId) {
+  public String generateToken(User user) {
     Instant now = Instant.now();
     return Jwts.builder()
-      .claim("userId", userId)
+      .claim("user", user)
       .setIssuedAt(Date.from(now))
       .setExpiration(Date.from(now.plus(expTime, ChronoUnit.SECONDS)))
       .signWith(SignatureAlgorithm.HS256, key)
       .compact();
   }
   
-  public Integer validateToken(String token) throws Throwable {
+  public Map<String, Object> validateToken(String token) throws Throwable {
     Jws<Claims> jwt = Jwts.parser()
       .setSigningKey(key)
       .parseClaimsJws(token);
-    return (Integer)jwt.getBody().get("userId");
+    return (Map<String, Object>)jwt.getBody().get("user");
   }
 }
