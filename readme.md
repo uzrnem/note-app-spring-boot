@@ -11,4 +11,4 @@ On Local
 mvn spring-boot:run
 
 ### To use H2 DB
-mvn spring-boot:run -Dspring.profiles.active=test
+mvn spring-boot:run -Dspring-boot.run.profiles=test
