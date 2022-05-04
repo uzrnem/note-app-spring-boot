@@ -16,6 +16,13 @@ server:
 spring:
   profiles:
     active: default
+  jwt:
+    secret: bhagyesh
+    exp_time: 3600
+
+---
+spring:
+  profiles: default
   jpa:
     hibernate:
       ddl-auto: update
@@ -26,9 +33,6 @@ spring:
     password: ${MYSQL_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
     validationQuery: SELECT 1
-  jwt:
-    secret: bhagyesh
-    exp_time: 3600
 
 ---
 spring:
@@ -40,7 +44,3 @@ spring:
     username: ${MYSQL_USERNAME:root}
     password: ${MYSQL_PASSWORD:root}
     driverClassName: org.h2.Driver
-  jwt:
-    secret: bhagyesh
-    exp_time: 360000
-  
