@@ -32,6 +32,9 @@ public class AutheticateAspect {
         String token = request.getHeader("Authorization");
 
         try {
+            if (token == null || token.replace("Bearer ", "").equals("")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Response<>("empty token!", null));
+            }
             Map<String, Object> user = util.validateToken(token.replace("Bearer ", ""));
             request.setAttribute("user", user);
             request.setAttribute("user_id", (Integer) user.get("id"));
