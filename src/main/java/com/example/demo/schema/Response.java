@@ -7,13 +7,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "message",
-    "data "
+    "data"
 })
 public class Response<T> {
 
     @JsonProperty("message")
     private String message;
-    @JsonProperty("data ")
+    @JsonProperty("data")
     private T data;
 
     /**
@@ -24,7 +24,6 @@ public class Response<T> {
     }
 
     /**
-     * 
      * @param data
      * @param message
      */
@@ -44,12 +43,12 @@ public class Response<T> {
         this.message = message;
     }
 
-    @JsonProperty("data ")
+    @JsonProperty("data")
     public T getData() {
         return data;
     }
 
-    @JsonProperty("data ")
+    @JsonProperty("data")
     public void setData(T data) {
         this.data = data;
     }
