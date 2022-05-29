@@ -21,6 +21,8 @@ spring:
   jwt:
     secret: bhagyesh
     exp_time: 3600
+  main:
+    banner-mode: off
 
 ---
 spring:
