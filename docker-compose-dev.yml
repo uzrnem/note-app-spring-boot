@@ -1,0 +1,16 @@
+#docker-compose up -d
+version: "3.7"
+
+services:
+  mvn:
+    image: maven:3.8.5-jdk-8-slim
+    container_name: jdkmvn
+    environment:
+      SERVER_PORT: 8080
+    working_dir: /app
+    volumes:
+      - $HOME/uzrnem/note-app-spring-boot:/app
+      - $HOME/uzrnem/maven:/root/.m2
+    command: tail -f /dev/null #mvn spring-boot:run #
+    ports:
+      - 8080:8080
