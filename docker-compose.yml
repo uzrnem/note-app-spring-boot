@@ -2,32 +2,9 @@
 version: "3.7"
 
 services:
-  mysqldb:
-    image: mysql:8.0.28
-    container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-    ports:
-      - 3306:3306
-    networks:
-      - note_spring
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:5.1.1
-    container_name: mysqladmin
-    environment:
-      PMA_HOST: mysqldb
-      PMA_PORT: 3306
-      PMA_USER: root
-      PMA_PASSWORD: root
-    ports:
-      - 8000:80
-    networks:
-      - note_spring
-  
   mvn:
-    image: maven:3.8.5-openjdk-8-slim
-    container_name: jdkmvn
+    image: maven:3.9.2-ibmjava-8
+    container_name: node-app
     environment:
       MYSQL_HOST: mysqldb
       MYSQL_DATABASE: db_example
@@ -37,13 +14,13 @@ services:
     working_dir: /app
     volumes:
       - $HOME/uzrnem/note-app-spring-boot:/app
-      - $HOME/.m2:/root/.m2
-    command: mvn spring-boot:run #tail -f /dev/null
+      - $HOME/uzrnem/dependencies/.m2:/root/.m2
+    command: tail -f /dev/null #mvn spring-boot:run #
     ports:
       - 8080:8080
     networks:
-      - note_spring
+      - docker-compose-files_mysql
 
 networks:
-  note_spring:
-    driver: bridge
+  docker-compose-files_mysql:
+    external: true
