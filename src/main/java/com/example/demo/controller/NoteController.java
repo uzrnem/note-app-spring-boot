@@ -1,20 +1,16 @@
 package com.example.demo.controller;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.example.demo.entity.Note;
-import com.example.demo.entity.User;
 import com.example.demo.interfaces.Autheticate;
-import com.example.demo.repository.NoteRepository;
-import com.example.demo.repository.UserRepository;
 import com.example.demo.schema.NoteRequest;
 import com.example.demo.schema.NoteResponse;
 import com.example.demo.schema.Response;
+import com.example.demo.utils.DataNotFoundException;
+import com.example.demo.utils.NoteNotFoundException;
+import com.example.demo.services.NoteService;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,10 +38,7 @@ public class NoteController {
     Logger logger = LogManager.getLogger(NoteController.class);
 
     @Autowired
-    NoteRepository noteRepository;
-
-    @Autowired
-    UserRepository userRepository;
+    private NoteService service;
 
     @Autowired
     HttpServletRequest request;
@@ -58,18 +51,7 @@ public class NoteController {
         @ApiResponse(responseCode = "401", description = "failed operation",
             content = @Content(schema = @Schema(implementation = Response.class))) })
     public ResponseEntity<Response<List<NoteResponse>>> listNote() {
-        Optional<User> user = userRepository.findById((Integer)request.getAttribute("user_id"));
-
-        if (!user.isPresent()) {
-            return ResponseEntity.badRequest().body(new Response<>("user not found!", null));
-        }
-
-        List<Note> notes = noteRepository.getByUserId(user.get().getId());
-
-        List<NoteResponse> notesR = notes.stream()
-            .map(n -> new NoteResponse(n.getId().intValue(), n.getContent(), n.getIsCompleted())).collect(Collectors.toList());
-
-        return ResponseEntity.ok(new Response<>("notes listed!", notesR));
+        return ResponseEntity.ok(new Response<>("notes listed!", service.list((Integer)request.getAttribute("user_id"))));
     }
 
     @Autheticate
@@ -79,16 +61,13 @@ public class NoteController {
         @ApiResponse(responseCode = "200", description = "successful operation"),
         @ApiResponse(responseCode = "401", description = "failed operation",
                 content = @Content(schema = @Schema(implementation = Response.class))) })
-    public ResponseEntity<Response<NoteResponse>> addNote(@Valid @RequestBody NoteRequest noteRequest) {
-        Optional<User> user = userRepository.findById((Integer)request.getAttribute("user_id"));
-
-        if (!user.isPresent()) {
-            return ResponseEntity.badRequest().body(new Response<>("user not found!", null));
-        }
-        Note note = new Note(noteRequest.getContent(), user.get(), noteRequest.getIsCompleted());
-
-        noteRepository.save(note);
-        return ResponseEntity.ok(new Response<>("note created!", new NoteResponse(note.getId().intValue(), note.getContent(), note.getIsCompleted())));
+    public ResponseEntity<Response<NoteResponse>> addNote(@Valid @RequestBody NoteRequest noteRequest) throws DataNotFoundException {
+        return ResponseEntity.ok(
+            new Response<>(
+                "note created!", 
+                service.add(noteRequest, (Integer)request.getAttribute("user_id"))
+            )
+        );
     }
 
     @Autheticate
@@ -98,22 +77,14 @@ public class NoteController {
         @ApiResponse(responseCode = "200", description = "successful operation"),
         @ApiResponse(responseCode = "401", description = "failed operation",
                 content = @Content(schema = @Schema(implementation = Response.class))) })
-    public ResponseEntity<Response<NoteResponse>> getNote(@PathVariable("id") Long id) {
-        Optional<User> user = userRepository.findById((Integer)request.getAttribute("user_id"));
+    public ResponseEntity<Response<NoteResponse>> getNote(@PathVariable("id") Long id) throws NoteNotFoundException {
 
-        if (!user.isPresent()) {
-            return ResponseEntity.badRequest().body(new Response<>("user not found!", null));
-        }
-
-        Optional<Note> note = noteRepository.getByIdAndUserId(id, user.get().getId());
-
-        if (!note.isPresent()) {
-            return ResponseEntity.badRequest().body(new Response<>("note not found!", null));
-        }
-
-        Note n = note.get();
-
-        return ResponseEntity.ok(new Response<>("note showed!", new NoteResponse(n.getId().intValue(), n.getContent(), n.getIsCompleted())));
+        return ResponseEntity.ok(
+            new Response<>(
+                "note fetched!", 
+                service.get(id, (Integer)request.getAttribute("user_id"))
+            )
+        );
     }
 
     @Autheticate
@@ -123,26 +94,14 @@ public class NoteController {
         @ApiResponse(responseCode = "200", description = "successful operation"),
         @ApiResponse(responseCode = "401", description = "failed operation",
                 content = @Content(schema = @Schema(implementation = Response.class))) })
-    public ResponseEntity<Response<NoteResponse>> updateNote(@PathVariable("id") Long id, @Valid @RequestBody NoteRequest noteRequest) {
-        Optional<User> user = userRepository.findById((Integer)request.getAttribute("user_id"));
+    public ResponseEntity<Response<NoteResponse>> updateNote(@PathVariable("id") Long id, @Valid @RequestBody NoteRequest noteRequest) throws DataNotFoundException {
 
-        if (!user.isPresent()) {
-            return ResponseEntity.badRequest().body(new Response<>("user not found!", null));
-        }
-
-        Optional<Note> noteOpt = noteRepository.getByIdAndUserId(id, user.get().getId());
-
-        if (!noteOpt.isPresent()) {
-            return ResponseEntity.badRequest().body(new Response<>("note not found!", null));
-        }
-
-        Note note = noteOpt.get();
-
-        note.setContent(noteRequest.getContent());
-        note.setIsCompleted(noteRequest.getIsCompleted());
-        noteRepository.save(note);
-
-        return ResponseEntity.ok(new Response<>("note updated!", new NoteResponse(note.getId().intValue(), note.getContent(), note.getIsCompleted())));
+        return ResponseEntity.ok(
+            new Response<>(
+                "note updated!", 
+                service.update(id, noteRequest, (Integer)request.getAttribute("user_id"))
+            )
+        );
     }
 
     @Autheticate
@@ -152,22 +111,8 @@ public class NoteController {
         @ApiResponse(responseCode = "204", description = "successful operation"),
         @ApiResponse(responseCode = "401", description = "failed operation",
                 content = @Content(schema = @Schema(implementation = Response.class))) })
-    public ResponseEntity<Response<?>> deleteNote(@PathVariable("id") Long id) {
-        Optional<User> user = userRepository.findById((Integer)request.getAttribute("user_id"));
-
-        if (!user.isPresent()) {
-            return ResponseEntity.badRequest().body(new Response<>("user not found!", null));
-        }
-
-        Optional<Note> noteOpt = noteRepository.getByIdAndUserId(id, user.get().getId());
-
-        if (!noteOpt.isPresent()) {
-            return ResponseEntity.badRequest().body(new Response<>("note not found!", null));
-        }
-
-        Note note = noteOpt.get();
-        noteRepository.delete(note);
-
+    public ResponseEntity<Response<?>> deleteNote(@PathVariable("id") Long id) throws DataNotFoundException {
+        service.delete(id, (Integer)request.getAttribute("user_id"));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

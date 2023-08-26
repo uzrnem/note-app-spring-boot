@@ -1,0 +1,72 @@
+package com.example.demo.repository;
+
+import com.example.demo.entity.User;
+import com.example.demo.entity.Note;
+import com.example.demo.repository.NoteRepository;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+@DataJpaTest
+public class NoteRepositoryTest {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private NoteRepository noteRepository;
+    User user;
+    Note note;
+
+    @BeforeEach
+    void setUp() {
+        user = new User("uzrnem@gmail.com", "gisue");
+        userRepository.save(user);
+
+        note = new Note("Sample Note", user, true);
+        noteRepository.save(user);
+    }
+
+    @AfterEach
+    void tearDown() {
+        note = null;
+        user = null;
+        noteRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+
+    @Test
+    void testExistsByEmail()
+    {
+        Boolean isNotePresent = noteRepository.getByUserId(user.getId());
+        assertThat(isNotePresent).isEqualTo(true);
+    }
+
+    @Test
+    void testFindByVendorName_Found()
+    {
+        Optional<Note> user = userRepository.findByEmail("uzrnem@gmail.com");
+        assertThat(user.isPresent()).isEqualTo(true);
+    }
+}
+/*
+package com.example.demo.repository;
+
+import org.springframework.data.repository.CrudRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+import com.example.demo.entity.Note;
+
+public interface NoteRepository extends CrudRepository<Note, Integer> {
+    List<Note> getByUserId(Integer userId);
+
+    Optional<Note> getByIdAndUserId( Long id, Integer userId);
+}
+*/

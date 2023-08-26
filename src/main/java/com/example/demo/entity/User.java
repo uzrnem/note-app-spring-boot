@@ -8,6 +8,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.CreatedDate;
@@ -31,6 +32,11 @@ public class User {
     @Size(max = 50)
     @JsonIgnore
     private String password;
+
+    @Null
+    @Size(max = 50)
+    @JsonIgnore
+    private String role;
     
     private @CreatedDate Instant createdAt;
     private @LastModifiedDate Instant updatedAt;
@@ -74,5 +80,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @JsonIgnore
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

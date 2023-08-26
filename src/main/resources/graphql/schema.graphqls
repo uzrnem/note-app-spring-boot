@@ -1,0 +1,19 @@
+type Query {
+    allNotes: [NoteResponse]
+    getNote(noteId:Int): NoteResponse
+}
+type Mutation {
+    createNote(note:NoteRequest): NoteResponse
+    updateNote(noteId:Int, note:NoteRequest): NoteResponse
+    deleteNote(noteId:Int): String!
+}
+
+input NoteRequest{
+    content: String
+    isCompleted: Boolean
+}
+type NoteResponse {
+    id:ID!
+    content: String
+    isCompleted: Boolean
+}
