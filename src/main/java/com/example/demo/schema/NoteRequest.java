@@ -2,6 +2,7 @@
 package com.example.demo.schema;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -13,9 +14,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 })
 public class NoteRequest {
 
-    @NotNull
+    @NotNull(groups = OnCreate.class, message = "{content.notnull}")
     @JsonProperty("content")
     private String content;
+
+    @NotNull(groups = OnUpdate.class, message = "{isCompleted.notnull}")
+    @Null(groups = OnCreate.class)
     @JsonProperty("isCompleted")
     private Boolean isCompleted;
 
