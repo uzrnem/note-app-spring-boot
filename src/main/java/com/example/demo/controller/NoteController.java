@@ -6,7 +6,10 @@ import javax.validation.Valid;
 
 import com.example.demo.interfaces.Autheticate;
 import com.example.demo.schema.NoteRequest;
+import com.example.demo.schema.OnUpdate;
 import com.example.demo.schema.NoteResponse;
+import com.example.demo.schema.OnCreate;
+import com.example.demo.schema.OnUpdate;
 import com.example.demo.schema.Response;
 import com.example.demo.utils.DataNotFoundException;
 import com.example.demo.utils.NoteNotFoundException;
@@ -29,8 +32,10 @@ import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.validation.annotation.Validated;
 
 @RestController
+@Validated
 @RequestMapping("/note")
 @Tag(name = "note", description = "the Note API")
 public class NoteController {
@@ -61,6 +66,7 @@ public class NoteController {
         @ApiResponse(responseCode = "200", description = "successful operation"),
         @ApiResponse(responseCode = "401", description = "failed operation",
                 content = @Content(schema = @Schema(implementation = Response.class))) })
+    @Validated(OnCreate.class)
     public ResponseEntity<Response<NoteResponse>> addNote(@Valid @RequestBody NoteRequest noteRequest) throws DataNotFoundException {
         return ResponseEntity.ok(
             new Response<>(
@@ -94,6 +100,7 @@ public class NoteController {
         @ApiResponse(responseCode = "200", description = "successful operation"),
         @ApiResponse(responseCode = "401", description = "failed operation",
                 content = @Content(schema = @Schema(implementation = Response.class))) })
+    @Validated(OnUpdate.class)
     public ResponseEntity<Response<NoteResponse>> updateNote(@PathVariable("id") Long id, @Valid @RequestBody NoteRequest noteRequest) throws DataNotFoundException {
 
         return ResponseEntity.ok(
