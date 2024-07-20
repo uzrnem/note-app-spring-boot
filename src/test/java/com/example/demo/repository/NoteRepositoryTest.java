@@ -8,9 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.List;
 import java.util.Optional;
 
 @DataJpaTest
@@ -43,10 +40,10 @@ public class NoteRepositoryTest {
     @Test
     public void NoteRepository_FindById_ReturnNote() {
         User user = new User("uzrnem@gmail.com", "gisue");
-        User savedUser = userRepository.save(user);
+        userRepository.save(user);
 
         Note note = new Note("Sample Note", user, true);
-        Note savedNote = noteRepository.save(note);
+        noteRepository.save(note);
 
         User userList = userRepository.findById(user.getId()).get();
         Assertions.assertThat(userList).isNotNull();
@@ -61,7 +58,7 @@ public class NoteRepositoryTest {
         userRepository.save(user);
 
         Note note = new Note("Sample Note", user, true);
-        Note savedNote = noteRepository.save(note);
+        noteRepository.save(note);
 
         noteRepository.deleteById(note.getId());
         Optional<Note> noteReturn = noteRepository.findById(note.getId());

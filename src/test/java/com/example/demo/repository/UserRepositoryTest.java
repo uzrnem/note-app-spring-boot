@@ -7,9 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.List;
 import java.util.Optional;
 
 @DataJpaTest
@@ -22,13 +19,9 @@ public class UserRepositoryTest {
     @Test
     public void UserRepository_SaveAll_ReturnSavedUser() {
 
-        //Arrange
         User user = new User("uzrnem@gmail.com", "gisue");
-
-        //Act
         User savedUser = userRepository.save(user);
 
-        //Assert
         Assertions.assertThat(savedUser).isNotNull();
         Assertions.assertThat(savedUser.getId()).isGreaterThan(0);
     }
@@ -55,4 +48,17 @@ public class UserRepositoryTest {
 
         Assertions.assertThat(userReturn).isEmpty();
     }
+/*
+    @Test
+    public void testFindByEmail() {
+        User user = new User("uzrnem@gmail.com", "gisue");
+
+        userRepository.save(user);
+        
+        //User user2 = userRepository.findFirstByEmail(user.getEmail());
+
+        Optional<User> userReturn = userRepository.findByEmail(user.getEmail());
+
+        Assertions.assertThat(userReturn).isNotEmpty();
+    } */
 }
