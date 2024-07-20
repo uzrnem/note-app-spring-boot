@@ -28,7 +28,7 @@ public class Note {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     @JsonProperty("id")
-    private Long id;
+    private Integer id;
 
     @JsonProperty("content")
     private String content;
@@ -71,7 +71,7 @@ public class Note {
     * @param content
     * @param isCompleted
     */
-    public Note(Long id, String content, User user, Boolean isCompleted) {
+    public Note(Integer id, String content, User user, Boolean isCompleted) {
         super();
         this.id = id;
         this.content = content;
@@ -80,12 +80,12 @@ public class Note {
     }
 
     @JsonProperty("id")
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
     @JsonProperty("id")
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
