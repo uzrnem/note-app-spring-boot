@@ -12,3 +12,9 @@ mvn spring-boot:run
 
 ### To use H2 DB
 mvn spring-boot:run -Dspring-boot.run.profiles=test
+
+
+#### Test cases written
+> MVC Integration Test cases in controller
+> Unit Test cases, Argument Captor, Logger checker, Private Field Modification in service
+
