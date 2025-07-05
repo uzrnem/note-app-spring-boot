@@ -19,6 +19,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=test
 ```
 org.springframework.test.util.ReflectionTestUtils.setField(myService, "dependency", mockDependency);
 ```
+<br />
 
 > Parameterized Test cases ( one in many )
 ```
@@ -36,6 +37,7 @@ void isBlank_ShouldReturnTrueForNullOrBlankStrings(String input, boolean expecte
     assertEquals(expected, Strings.isBlank(input));
 }
 ```
+<br />
 
 > ArgumentCaptor
 ```
@@ -51,6 +53,7 @@ void testGetAll() {
     assertEquals(note.getUser().getId(), intArgument.getValue());
 }
 ```
+<br />
 
 > Captured Output or Log Verification
 ```
@@ -72,7 +75,7 @@ class MyServiceTest {
     }
 }
 ```
-
+<br />
 
 > WireMock
 ```
@@ -102,7 +105,7 @@ class ExampleTests {
   static class AppConfiguration {}
 }
 ```
-
+<br />
 
 > Mocked Static Method
 ```
@@ -132,7 +135,7 @@ public class MyServiceTest {
     }
 }
 ```
-
+<br />
 
 > Mocked Construction
 ```

@@ -3,24 +3,22 @@ version: "3.7"
 
 services:
   mvn:
-    image: maven:3.9.2-ibmjava-8
+    image: docker.io/library/maven:3.9.10-amazoncorretto-21-al2023
     container_name: node-app
     environment:
-      MYSQL_HOST: mysqldb
+      MYSQL_HOST: localhost
       MYSQL_DATABASE: db_example
       MYSQL_USERNAME: root
       MYSQL_PASSWORD: root
       SERVER_PORT: 8080
+      TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
+      TESTCONTAINERS_RYUK_DISABLED: true
+      DOCKER_HOST: unix://$XDG_RUNTIME_DIR/podman/podman.sock
     working_dir: /app
     volumes:
       - $HOME/uzrnem/note-app-spring-boot:/app
       - $HOME/uzrnem/dependencies/.m2:/root/.m2
+      - /var/run/docker.sock:/var/run/docker.sock
     command: tail -f /dev/null #mvn spring-boot:run #
     ports:
       - 8080:8080
-    networks:
-      - docker-compose-files_mysql
-
-networks:
-  docker-compose-files_mysql:
-    external: true
