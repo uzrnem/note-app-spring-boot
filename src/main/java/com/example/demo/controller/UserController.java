@@ -17,14 +17,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import io.swagger.v3.oas.annotations.*;
-import io.swagger.v3.oas.annotations.media.*;
-import io.swagger.v3.oas.annotations.responses.*;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/user")
-@Tag(name = "user", description = "the User API")
 public class UserController {
 
     Logger logger = LogManager.getLogger(UserController.class);
@@ -34,13 +29,7 @@ public class UserController {
 
     @Autowired
     Utils util;
-	
-    @Operation(summary = "Register User", tags = { "user" })
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "successful operation",
-                content = @Content(schema = @Schema(implementation = Response.class))),
-        @ApiResponse(responseCode = "401", description = "failed operation",
-                content = @Content(schema = @Schema(implementation = Response.class))) })
+
     @PostMapping("/signup")
     public ResponseEntity<Response<String>> signup(@Valid @RequestBody SignRequest request) {
         if(userRepository.existsByEmail(request.getEmail())) {
@@ -53,12 +42,6 @@ public class UserController {
         return ResponseEntity.ok(new Response<>("registration successfull!", util.generateToken(user)));
     }
 
-    @Operation(summary = "Login User", tags = { "user" })
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "successful operation",
-                content = @Content(schema = @Schema(implementation = Response.class))),
-        @ApiResponse(responseCode = "401", description = "failed operation",
-                content = @Content(schema = @Schema(implementation = Response.class))) })
     @PostMapping("/login")
     public ResponseEntity<Response<String>> login(@Valid @RequestBody SignRequest request) {
         Optional<User> user = userRepository.findByEmail(request.getEmail());

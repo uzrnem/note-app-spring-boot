@@ -16,13 +16,13 @@ mvn spring-boot:run -Dspring-boot.run.profiles=test
 
 #### Test cases written
 > Mock Private Field
-```
+```java
 org.springframework.test.util.ReflectionTestUtils.setField(myService, "dependency", mockDependency);
 ```
 <br />
 
 > Parameterized Test cases ( one in many )
-```
+```java
 private static Stream<Arguments> provideStringsForIsBlank() {
     return Stream.of(
       Arguments.of(null, true),
@@ -40,7 +40,7 @@ void isBlank_ShouldReturnTrueForNullOrBlankStrings(String input, boolean expecte
 <br />
 
 > ArgumentCaptor
-```
+```java
 @Test
 void testGetAll() {
     when(noteRepository.getByUserId(anyInt())).thenReturn(List.of(note));
@@ -56,7 +56,7 @@ void testGetAll() {
 <br />
 
 > Captured Output or Log Verification
-```
+```java
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -78,7 +78,7 @@ class MyServiceTest {
 <br />
 
 > WireMock
-```
+```java
 // implementation 'org.wiremock.integrations:wiremock-spring-boot:3.10.0'
 
 @SpringBootTest(classes = ExamplesTests.AppConfiguration.class)
@@ -108,7 +108,7 @@ class ExampleTests {
 <br />
 
 > Mocked Static Method
-```
+```java
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -138,7 +138,7 @@ public class MyServiceTest {
 <br />
 
 > Mocked Construction
-```
+```java
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import static org.mockito.Mockito.*;
@@ -171,6 +171,137 @@ class MyService {
 class MyDependency {
     public String someMethod() {
         return "real result";
+    }
+}
+```
+<br />
+
+### Test Containers
+
+> pom.xml
+```xml
+<project>
+	<dependencies>
+		<!-- Spring Data JPA & PostgreSQL -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- Testcontainers -->
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-testcontainers</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<!-- Testcontainers BOM (Recommended for version alignment) -->
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers-bom</artifactId>
+				<version>1.19.0</version> <!-- Use latest version -->
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+</project>
+```
+
+> Code
+```java
+@Entity
+@Table(name = "update")
+public class Update {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String status;
+}
+
+@Repository
+public interface UpdateRepository extends JpaRepository<Update, Long> {
+    Optional<Update> findById(Long id);
+}
+
+@Service
+public class UpdateService {
+
+	private static final Logger logger = LoggerFactory.getLogger(UpdateService.class)
+    private final UpdateRepository UpdateRepository;
+
+    public UpdateService(UpdateRepository UpdateRepository) {
+        this.UpdateRepository = UpdateRepository;
+    }
+
+    public Update createUpdate(Update Update) {
+        Update savedUpdate = UpdateRepository.save(Update);
+        logger.info("Update {} saved to database:", savedUpdate);
+        return savedUpdate;
+    }
+}
+```
+
+> TestContainers
+```java
+@SpringBootTest
+@AutoConfigureMockMvc
+@Testcontainers
+public class OrderControllerWithServiceConnectionIT {
+    private static final Integer TIMEOUT = 120;
+    private static final Logger logger = LoggerFactory.getLogger(OrderControllerWithServiceConnectionIT.class);
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Container
+    @ServiceConnection
+    static PostgresSQLContainer<?> postgres = new PostgresSQLContainer<>(
+        DockerImageName.parse("postgres:8.0") // .asCompatibleSubstituteFor("mysql")
+    );
+
+    @BeforeAll
+    static void startContainers() {
+        Awaitility.await().atMost(Duration.ofSeconds(TIMEOUT)).until(postgres::isRunning);
+        logger.info("PostgresSQL is up and running!");
+    }
+
+    // Optional to @ServiceConnection, but useful for clarity
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.datasource.driver-class-name", postgres::getDriverClassName);
+        registry.add("spring.jpa.database-platform", () -> "org.hibernate.dialect.PostgreSQLDialect");
+    }
+
+    @Test
+    public void shouldCreateOrderAndPublishEvent() throws Exception {
+        Order order = new Order("DUMMY_STATUS", "Order from Integration Test");
+        Order createdOrder = orderService.createOrder(order);
+        // Verify order saved in the database
+        Order savedOrder = orderRepository.findById(createdOrder.getId()).orElseThrow();
+        assertThat(savedOrder.getStatus()).isEqualTo("DUMMY_STATUS");
     }
 }
 ```
