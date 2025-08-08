@@ -11,14 +11,14 @@ services:
       MYSQL_USERNAME: root
       MYSQL_PASSWORD: root
       SERVER_PORT: 8080
-      TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
-      TESTCONTAINERS_RYUK_DISABLED: true
-      DOCKER_HOST: unix://$XDG_RUNTIME_DIR/podman/podman.sock
+    #  TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
+    #  TESTCONTAINERS_RYUK_DISABLED: true
+    #  DOCKER_HOST: unix:///tmp/podman.sock
     working_dir: /app
     volumes:
       - $HOME/uzrnem/note-app-spring-boot:/app
       - $HOME/uzrnem/dependencies/.m2:/root/.m2
-      - /var/run/docker.sock:/var/run/docker.sock
+    #  - /var/run/docker.sock:/var/run/docker.sock
     command: tail -f /dev/null #mvn spring-boot:run #
     ports:
       - 8080:8080
