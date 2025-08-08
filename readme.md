@@ -135,6 +135,12 @@ public class MyServiceTest {
             // Optionally, verify interactions
             mockedStatic.verify(MyStaticClass::staticMethod);
         }
+
+        try (MockedStatic<CompletableFuture> mockedStatic = Mockito.mockStatic(CompletableFuture.class)) {
+            // Configure the mock behavior
+            mockedStatic.when(() -> CompletableFuture.runAsync(any(Runnable.class)))
+                .thenReturn(RuntimeException.class);
+        }
     }
 }
 ```

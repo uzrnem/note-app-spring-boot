@@ -24,15 +24,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import io.swagger.v3.oas.annotations.*;
-import io.swagger.v3.oas.annotations.media.*;
-import io.swagger.v3.oas.annotations.responses.*;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/note")
-@Tag(name = "note", description = "the Note API")
 public class NoteController {
 
     Logger logger = LogManager.getLogger(NoteController.class);
@@ -45,22 +39,12 @@ public class NoteController {
 
     @Autheticate
     @GetMapping()
-    @Operation(summary = "List of user notes", tags = { "note" }, security = @SecurityRequirement(name = "bearerAuth"))
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "successful operation"),
-        @ApiResponse(responseCode = "401", description = "failed operation",
-            content = @Content(schema = @Schema(implementation = Response.class))) })
     public ResponseEntity<Response<List<NoteResponse>>> listNote() {
         return ResponseEntity.ok(new Response<>("notes listed!", service.list((Integer)request.getAttribute("user_id"))));
     }
 
     @Autheticate
     @PostMapping()
-    @Operation(summary = "Add Note to User List", tags = { "note" }, security = @SecurityRequirement(name = "bearerAuth"))
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "successful operation"),
-        @ApiResponse(responseCode = "401", description = "failed operation",
-                content = @Content(schema = @Schema(implementation = Response.class))) })
     public ResponseEntity<Response<NoteResponse>> addNote(@Valid @RequestBody NoteRequest noteRequest) throws DataNotFoundException {
         return ResponseEntity.ok(
             new Response<>(
@@ -72,11 +56,6 @@ public class NoteController {
 
     @Autheticate
     @GetMapping("/{id}")
-    @Operation(summary = "Fetch User Note", tags = { "note" }, security = @SecurityRequirement(name = "bearerAuth"))
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "successful operation"),
-        @ApiResponse(responseCode = "401", description = "failed operation",
-                content = @Content(schema = @Schema(implementation = Response.class))) })
     public ResponseEntity<Response<NoteResponse>> getNote(@PathVariable("id") Long id) throws NoteNotFoundException {
 
         return ResponseEntity.ok(
@@ -89,11 +68,6 @@ public class NoteController {
 
     @Autheticate
     @PostMapping("/{id}")
-    @Operation(summary = "Update User Note", tags = { "note" }, security = @SecurityRequirement(name = "bearerAuth"))
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "successful operation"),
-        @ApiResponse(responseCode = "401", description = "failed operation",
-                content = @Content(schema = @Schema(implementation = Response.class))) })
     public ResponseEntity<Response<NoteResponse>> updateNote(@PathVariable("id") Long id, @Valid @RequestBody NoteRequest noteRequest) throws DataNotFoundException {
 
         return ResponseEntity.ok(
@@ -106,11 +80,6 @@ public class NoteController {
 
     @Autheticate
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete User Note", tags = { "note" }, security = @SecurityRequirement(name = "bearerAuth"))
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "successful operation"),
-        @ApiResponse(responseCode = "401", description = "failed operation",
-                content = @Content(schema = @Schema(implementation = Response.class))) })
     public ResponseEntity<Response<?>> deleteNote(@PathVariable("id") Long id) throws DataNotFoundException {
         service.delete(id, (Integer)request.getAttribute("user_id"));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
